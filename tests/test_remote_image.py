@@ -150,5 +150,17 @@ class RequestConstructionTests(unittest.TestCase):
         self.assertIn("/tmp/trace.txt", command)
 
 
+class OutputPathTests(unittest.TestCase):
+    def test_default_output_path_uses_relative_tmp_figs_directory(self):
+        module = load_module()
+
+        output_path = module.default_output_path("png")
+
+        self.assertEqual(Path("tmp/figs"), output_path.parent)
+        self.assertFalse(output_path.is_absolute())
+        self.assertEqual(".png", output_path.suffix)
+        self.assertTrue(output_path.name.startswith("image-"))
+
+
 if __name__ == "__main__":
     unittest.main()

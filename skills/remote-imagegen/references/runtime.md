@@ -28,4 +28,5 @@ The bundled runner resolves request target and auth in this order.
 
 - The raw API response is always saved as JSON.
 - Generated image bytes are written into the requested output path.
+- If `--out` is omitted, the default image path is `./tmp/figs/image-<timestamp>.<ext>`.
 - If multiple images are returned, the runner appends `-1`, `-2`, and so on before the file extension.

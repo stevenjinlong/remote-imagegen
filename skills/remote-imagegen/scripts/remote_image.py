@@ -235,7 +235,7 @@ def normalize_output_path(output_path: Path, output_format: str) -> Path:
 
 def default_output_path(output_format: str) -> Path:
     stamp = time.strftime("%Y%m%d-%H%M%S")
-    return Path.cwd() / "generated-images" / f"image-{stamp}.{output_format}"
+    return Path("tmp/figs") / f"image-{stamp}.{output_format}"
 
 
 def output_paths(base_path: Path, count: int) -> List[Path]:
@@ -303,7 +303,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument("--n", type=int, default=1, help="Number of images to request.")
     parser.add_argument("--size", default="1536x1024", help="Requested image size.")
     parser.add_argument("--output-format", default="png", help="Requested output format.")
-    parser.add_argument("--out", type=Path, help="Output image path. Defaults to ./generated-images/...")
+    parser.add_argument("--out", type=Path, help="Output image path. Defaults to ./tmp/figs/...")
     parser.add_argument("--response-json", type=Path, help="Where to save the raw JSON response.")
     parser.add_argument("--trace-file", type=Path, help="Optional curl trace file path.")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH, help="Codex config TOML path.")
