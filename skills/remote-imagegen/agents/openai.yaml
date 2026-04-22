@@ -1,0 +1,7 @@
+interface:
+  display_name: "Remote Imagegen"
+  short_description: "Generate images through a custom Codex endpoint"
+  default_prompt: "Use $remote-imagegen when image generation must go through the OpenAI-compatible base URL configured in the local Codex installation."
+
+policy:
+  allow_implicit_invocation: true
