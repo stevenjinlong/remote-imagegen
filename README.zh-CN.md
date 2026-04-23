@@ -14,20 +14,20 @@
 <h1 align="center">Remote Imagegen</h1>
 
 <p align="center">
-  Use <code>$remote-imagegen</code> in Codex to generate or edit images through your configured OpenAI-compatible endpoint.
+  在 Codex 里直接使用 <code>$remote-imagegen</code>，把图片生成或图片编辑请求发到你本地配置的 OpenAI-compatible endpoint。
 </p>
 
 <p align="center">
-  <img src="./assets/cute-kitten.png" alt="Cute kitten generated with $remote-imagegen" width="520" />
+  <img src="./assets/cute-kitten.png" alt="使用 $remote-imagegen 生成的小猫示例图" width="520" />
 </p>
 
 <p align="center">
-  <a href="./README.zh-CN.md">简体中文</a>
+  <a href="./README.md">English</a>
 </p>
 
-> Tip: For more reliable triggering, mention `$remote-imagegen`, `OpenAI-compatible endpoint`, `custom base_url`, or `self-hosted provider` directly in your prompt.
+> 提示：想让这个 skill 更容易被命中，直接在提示词里写上 `$remote-imagegen`、`OpenAI-compatible endpoint`、`custom base_url` 或 `self-hosted provider`。
 
-## Download
+## 下载
 
 ```bash
 git clone https://github.com/stevenjinlong/remote-imagegen.git
@@ -35,31 +35,31 @@ cd remote-imagegen
 python3 scripts/install_local.py --mode symlink
 ```
 
-If you prefer a copied install instead of a symlink:
+如果你更想直接复制而不是软链接：
 
 ```bash
 python3 scripts/install_local.py --mode copy
 ```
 
-Restart Codex after installation.
+安装后重启 Codex。
 
-## Use
+## 使用
 
-Ask Codex with the skill name explicitly:
+在 Codex 里直接带上 skill 名称：
 
 ```text
-Use $remote-imagegen to generate a cute kitten portrait through my configured OpenAI-compatible endpoint.
+用 $remote-imagegen 通过我配置的 OpenAI-compatible endpoint 生成一张可爱的小猫肖像。
 ```
 
 ```text
-Use $remote-imagegen to edit this image through my custom base_url and keep the same character design.
+用 $remote-imagegen 通过我的 custom base_url 编辑这张图，并保持原始角色设计不变。
 ```
 
 ```text
-Use $remote-imagegen to generate 4 product shots through my self-hosted image endpoint.
+用 $remote-imagegen 通过我自托管的图片接口生成 4 张商品图。
 ```
 
-If your Codex setup already points to a custom OpenAI-compatible `base_url`, the skill will send image generation to that provider instead of the built-in image path.
+如果你的 Codex 已经指向自定义的 OpenAI-compatible `base_url`，这个 skill 会把图片请求发到那个提供方，而不是走内置图片路径。
 
 ## Star History
 
