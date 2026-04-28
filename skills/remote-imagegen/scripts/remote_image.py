@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import time
+import tempfile
 import urllib.request
 from pathlib import Path
 from typing import Any, List, NamedTuple, Optional, Tuple
@@ -187,6 +188,7 @@ def build_curl_command(
     prompt: str,
     model: str,
     size: str,
+    quality: Optional[str],
     n: int,
     output_format: str,
     response_path: Path,
@@ -215,6 +217,8 @@ def build_curl_command(
         "-F",
         f"output_format={output_format}",
     ]
+    if quality:
+        command.extend(["-F", f"quality={quality}"])
     if input_image is not None:
         command.extend(["-F", f"image=@{input_image}"])
     if trace_path is not None:
@@ -291,7 +295,8 @@ def materialize_images(payload: dict[str, Any], output_path: Path) -> List[Path]
 
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run remote image generation through the Codex-configured OpenAI-compatible endpoint.")
-    parser.add_argument("--prompt", required=True, help="Prompt for the image request.")
+    parser.add_argument("--prompt", help="Prompt for the image request.")
+    parser.add_argument("--prompt-file", type=Path, help="UTF-8 text file containing the image prompt.")
     parser.add_argument("--image", type=Path, help="Optional source image path for edit mode.")
     parser.add_argument(
         "--mode",
@@ -302,6 +307,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument("--model", default="gpt-image-2", help="Image model name.")
     parser.add_argument("--n", type=int, default=1, help="Number of images to request.")
     parser.add_argument("--size", default="1536x1024", help="Requested image size.")
+    parser.add_argument("--quality", help="Optional image quality value supported by the provider, such as low, medium, high, or auto.")
     parser.add_argument("--output-format", default="png", help="Requested output format.")
     parser.add_argument("--out", type=Path, help="Output image path. Defaults to ./tmp/figs/...")
     parser.add_argument("--response-json", type=Path, help="Where to save the raw JSON response.")
@@ -314,11 +320,28 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def resolve_prompt(prompt: Optional[str], prompt_file: Optional[Path]) -> str:
+    if prompt and prompt_file:
+        raise RuntimeError("Use only one prompt source: --prompt or --prompt-file.")
+    if prompt_file:
+        path = prompt_file.expanduser()
+        if not path.is_file():
+            raise RuntimeError(f"Prompt file does not exist: {path}")
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            raise RuntimeError(f"Prompt file is empty: {path}")
+        return text
+    if prompt and prompt.strip():
+        return prompt.strip()
+    raise RuntimeError("Provide --prompt or --prompt-file.")
+
+
 def run(argv: Optional[List[str]] = None) -> int:
     if shutil.which("curl") is None:
         raise RuntimeError("curl is required but was not found in PATH.")
 
     args = parse_args(argv)
+    prompt = resolve_prompt(args.prompt, args.prompt_file)
 
     input_image = args.image.expanduser() if args.image else None
     if input_image is not None and not input_image.is_file():
@@ -332,40 +355,47 @@ def run(argv: Optional[List[str]] = None) -> int:
         runtime = runtime._replace(api_key=args.api_key)
 
     output_path = normalize_output_path((args.out or default_output_path(args.output_format)).expanduser(), args.output_format)
-    response_path = (args.response_json or output_path.with_suffix(".json")).expanduser()
+    response_path = args.response_json.expanduser() if args.response_json else None
     trace_path = args.trace_file.expanduser() if args.trace_file else None
     ensure_parent(output_path)
-    ensure_parent(response_path)
+    if response_path is not None:
+        ensure_parent(response_path)
     if trace_path is not None:
         ensure_parent(trace_path)
 
-    effective_input = input_image if mode == "edit" else None
-    command = build_curl_command(
-        runtime=runtime,
-        prompt=args.prompt,
-        model=args.model,
-        size=args.size,
-        n=args.n,
-        output_format=args.output_format,
-        response_path=response_path,
-        trace_path=trace_path,
-        input_image=effective_input,
-    )
+    temp_response: Optional[tempfile.NamedTemporaryFile[bytes]] = None
+    try:
+        if response_path is None:
+            temp_response = tempfile.NamedTemporaryFile(prefix="remote-image-", suffix=".json", delete=False)
+            response_path = Path(temp_response.name)
+            temp_response.close()
 
-    result = subprocess.run(command, capture_output=True, text=True, check=False)
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or "curl request failed.")
+        effective_input = input_image if mode == "edit" else None
+        command = build_curl_command(
+            runtime=runtime,
+            prompt=prompt,
+            model=args.model,
+            size=args.size,
+            quality=args.quality,
+            n=args.n,
+            output_format=args.output_format,
+            response_path=response_path,
+            trace_path=trace_path,
+            input_image=effective_input,
+        )
 
-    payload = parse_response_payload(response_path)
-    images = materialize_images(payload, output_path)
-    summary = {
-        "mode": mode,
-        "provider_name": runtime.provider_name,
-        "endpoint": endpoint_for_mode(mode),
-        "response_json": str(response_path),
-        "images": [str(path) for path in images],
-    }
-    print(json.dumps(summary, indent=2))
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr.strip() or "curl request failed.")
+
+        payload = parse_response_payload(response_path)
+        images = materialize_images(payload, output_path)
+    finally:
+        if args.response_json is None and response_path is not None:
+            response_path.unlink(missing_ok=True)
+
+    for path in images:
+        print(path)
     return 0
 
 

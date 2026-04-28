@@ -26,9 +26,20 @@
   在 Codex 里直接使用 <code>$remote-imagegen</code>，把图片生成或图片编辑请求发到你本地配置的 OpenAI-compatible endpoint。
 </p>
 
-<p align="center">
-  <img src="./assets/cute-kitten.png" alt="使用 $remote-imagegen 生成的小猫示例图" width="520" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="./assets/cute-kitten.png" alt="使用 $remote-imagegen 生成的小猫示例图" width="360" />
+    </td>
+    <td align="center">
+      <img src="./assets/cute-kitten-portrait-4k.png" alt="使用 $remote-imagegen 生成的 4K 小猫肖像示例图" width="360" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">原始示例图</td>
+    <td align="center">4K 竖版示例图（2160x3840）</td>
+  </tr>
+</table>
 
 <p align="center">
   <a href="./README.md">English</a>
@@ -69,6 +80,17 @@ python3 scripts/install_local.py --mode copy
 ```
 
 如果你的 Codex 已经指向自定义的 OpenAI-compatible `base_url`，这个 skill 会把图片请求发到那个提供方，而不是走内置图片路径。
+
+## 分辨率提示
+
+如果想生成 2K 或 4K 图片，需要直接在提示词里写清楚目标分辨率，以及需要横版还是竖版。
+
+- 2K 横版：“2048x1152，横版”
+- 2K 竖版：“1152x2048，竖版”
+- 4K 横版：“3840x2160，横版”
+- 4K 竖版：“2160x3840，竖版”，上方新增示例图使用该尺寸
+
+实际可用性仍取决于你配置的图片 provider 和模型。
 
 ## Star History
 

@@ -26,9 +26,20 @@
   Use <code>$remote-imagegen</code> in Codex to generate or edit images through your configured OpenAI-compatible endpoint.
 </p>
 
-<p align="center">
-  <img src="./assets/cute-kitten.png" alt="Cute kitten generated with $remote-imagegen" width="520" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="./assets/cute-kitten.png" alt="Cute kitten generated with $remote-imagegen" width="360" />
+    </td>
+    <td align="center">
+      <img src="./assets/cute-kitten-portrait-4k.png" alt="4K cute kitten portrait generated with $remote-imagegen" width="360" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Original sample</td>
+    <td align="center">4K portrait sample (2160x3840)</td>
+  </tr>
+</table>
 
 <p align="center">
   <a href="./README.zh-CN.md">简体中文</a>
@@ -69,6 +80,17 @@ Use $remote-imagegen to generate 4 product shots through my self-hosted image en
 ```
 
 If your Codex setup already points to a custom OpenAI-compatible `base_url`, the skill will send image generation to that provider instead of the built-in image path.
+
+## Resolution Prompts
+
+For 2K or 4K image requests, mention the target resolution and whether you want a landscape or portrait image directly in your prompt.
+
+- 2K landscape: "2048x1152, landscape"
+- 2K portrait: "1152x2048, portrait"
+- 4K landscape: "3840x2160, landscape"
+- 4K portrait: "2160x3840, portrait", used by the sample above
+
+Actual availability still depends on the configured image provider and model.
 
 ## Star History
 
