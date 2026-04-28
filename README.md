@@ -36,8 +36,8 @@
     </td>
   </tr>
   <tr>
-    <td align="center">Original sample</td>
-    <td align="center">4K portrait sample (2160x3840)</td>
+    <td align="center">Default (1672 x 941)</td>
+    <td align="center">4K (2160x3840)</td>
   </tr>
 </table>
 

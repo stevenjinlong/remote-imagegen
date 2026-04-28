@@ -36,8 +36,8 @@
     </td>
   </tr>
   <tr>
-    <td align="center">原始示例图</td>
-    <td align="center">4K 竖版示例图（2160x3840）</td>
+    <td align="center">默认 (1672 x 941)</td>
+    <td align="center">4K（2160x3840）</td>
   </tr>
 </table>
 
