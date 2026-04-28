@@ -41,6 +41,20 @@ python3 skills/remote-imagegen/scripts/remote_image.py \
   --out ./generated/city-street.png
 ```
 
+Repeat text-to-image generation with the same endpoint settings:
+
+```bash
+python3 skills/remote-imagegen/scripts/remote_image.py \
+  --prompt "Replace this with the new image prompt." \
+  --size 2160x3840 \
+  --out ./generated/new-image-name.png
+```
+
+For repeat requests, the prompt and output path are usually the only values that need to change.
+Keep `--size 2160x3840` for vertical 4K output, or try `--size 3840x2160` for horizontal
+4K output when the configured provider supports those sizes. If the provider rejects a 4K
+size, use the highest supported generation size and upscale afterward.
+
 Image edit:
 
 ```bash
